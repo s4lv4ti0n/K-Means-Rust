@@ -66,11 +66,7 @@ version = "1.2.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "81156fece84ab6a9f2afdb109ce3ae577e42b1228441eded99bd77f627953b1a"
 dependencies = [
-<<<<<<< HEAD
  "cfg-if 1.0.0",
-=======
- "cfg-if",
->>>>>>> 708674fa65449e05c78ec2739c8293f52065bbcc
 ]
 
 [[package]]
@@ -79,11 +75,7 @@ version = "0.5.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "dca26ee1f8d361640700bde38b2c37d8c22b3ce2d360e1fc1c74ea4b0aa7d775"
 dependencies = [
-<<<<<<< HEAD
  "cfg-if 1.0.0",
-=======
- "cfg-if",
->>>>>>> 708674fa65449e05c78ec2739c8293f52065bbcc
  "crossbeam-utils",
 ]
 
@@ -93,11 +85,7 @@ version = "0.8.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "94af6efb46fef72616855b036a624cf27ba656ffc9be1b9a3c931cfc7749a9a9"
 dependencies = [
-<<<<<<< HEAD
  "cfg-if 1.0.0",
-=======
- "cfg-if",
->>>>>>> 708674fa65449e05c78ec2739c8293f52065bbcc
  "crossbeam-epoch",
  "crossbeam-utils",
 ]
@@ -108,11 +96,7 @@ version = "0.9.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "ec0f606a85340376eef0d6d8fec399e6d4a544d648386c6645eb6d0653b27d9f"
 dependencies = [
-<<<<<<< HEAD
  "cfg-if 1.0.0",
-=======
- "cfg-if",
->>>>>>> 708674fa65449e05c78ec2739c8293f52065bbcc
  "const_fn",
  "crossbeam-utils",
  "lazy_static",
@@ -127,11 +111,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "ec91540d98355f690a86367e566ecad2e9e579f230230eb7c21398372be73ea5"
 dependencies = [
  "autocfg",
-<<<<<<< HEAD
  "cfg-if 1.0.0",
-=======
- "cfg-if",
->>>>>>> 708674fa65449e05c78ec2739c8293f52065bbcc
  "const_fn",
  "lazy_static",
 ]
@@ -153,7 +133,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "e78d4f1cc4ae33bbfc157ed5d5a5ef3bc29227303d595861deb238fcec4e9457"
 
 [[package]]
-<<<<<<< HEAD
 name = "getrandom"
 version = "0.1.15"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -165,8 +144,6 @@ dependencies = [
 ]
 
 [[package]]
-=======
->>>>>>> 708674fa65449e05c78ec2739c8293f52065bbcc
 name = "gif"
 version = "0.11.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -215,7 +192,6 @@ dependencies = [
 ]
 
 [[package]]
-<<<<<<< HEAD
 name = "k_means_rust"
 version = "0.1.0"
 dependencies = [
@@ -224,8 +200,6 @@ dependencies = [
 ]
 
 [[package]]
-=======
->>>>>>> 708674fa65449e05c78ec2739c8293f52065bbcc
 name = "lazy_static"
 version = "1.4.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -329,7 +303,6 @@ dependencies = [
 ]
 
 [[package]]
-<<<<<<< HEAD
 name = "ppv-lite86"
 version = "0.2.10"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -377,8 +350,6 @@ dependencies = [
 ]
 
 [[package]]
-=======
->>>>>>> 708674fa65449e05c78ec2739c8293f52065bbcc
 name = "rayon"
 version = "1.5.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -427,15 +398,12 @@ dependencies = [
 ]
 
 [[package]]
-<<<<<<< HEAD
 name = "wasi"
 version = "0.9.0+wasi-snapshot-preview1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "cccddf32554fecc6acb585f82a32a72e28b48f8c4c1883ddfeeeaa96f7d8e519"
 
 [[package]]
-=======
->>>>>>> 708674fa65449e05c78ec2739c8293f52065bbcc
 name = "weezl"
 version = "0.1.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
