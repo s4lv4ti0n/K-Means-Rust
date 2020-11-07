@@ -1,134 +1,89 @@
-use std::path::Path;
-use image::{RgbImage, Rgb};
+use std::{path::Path, env};
+use image::{Rgb, ImageBuffer};
 use rand::Rng;
 
-struct CentroidSet {
-    items: Vec<Rgb<usize>>,
-    counter: usize,
-}
-impl CentroidSet {
-    fn new(size: usize) -> CentroidSet {
-        CentroidSet {
-            items: Vec::with_capacity(size),
-            counter: 0
-        }
-    }
-
-    fn add(&mut self, pixel: &Rgb<u8>) {
-        self.items.push(Rgb([
-            pixel.0[0] as usize,
-            pixel.0[1] as usize,
-            pixel.0[2] as usize,
-        ]));
-    }
-
-    fn cumulate(&mut self, centroid: Rgb<usize>) {
-        for j in 0..3 {
-            self.items[i].0[j] += centroid.items[i].0[j];
-        }
-        self.counter += 1;
-    }
-
-    fn is_equal(&self, centroid: &CentroidSet) -> bool {
-        for i in 0..self.items.len() {
-            for j in 0..3 {
-                if self.items[i].0[j] != centroid.items[i].0[j] {
-                    return false;
-                }
-            }
-        }
-        return true;
-    }
-
-    fn calculate_avg(&mut self) {
-        for i in 0..self.items.len() {
-            for j in 0..3 {
-                self.items[i].0[j] = self.items[i].0[j]/self.counter;
-            }
-        }
-        self.counter = 0;
-    }
-
-    fn reset(&mut self) {
-        for i in 0..self.items.len() {
-            for j in 0..3 {
-                self.items[i].0[j] = 0;
-            }
-        }
-    }
-
-    fn get_closest_centroid(&self, pixel: &Rgb<u8>) -> Rgb<usize> {
-        let distance = std::i32::MAX;
-        let closest: Rgb<usize> = Rgb([0,0,0]);
-
-        for cluster in self.items {
-            let tmp = 0.0;
-            for (i, value) in cluster.0.iter().enumerate() {
-                tmp += (*value as f32 - pixel.0[i] as f32).powf(2f32);
-            }
-            let tmp = tmp.sqrt() as i32;
-            if tmp < distance {
-                distance = tmp;
-                closest = cluster;
-            }
-        }
-        return closest;
-    }
-
-    fn clone(&self) -> Self {
-        *self
-    }
-}
-
-
-//TODO: NEEDS REFACTOR
-fn init(k_value: usize, input_path: &str) {
-    if k_value == 0 { return; }
-
-    let img = image::open(&Path::new(input_path)).unwrap().to_rgb();
+fn k_means(k_value: usize, input_path: &Path, save_artefacts: bool) -> ImageBuffer<Rgb<u8>, Vec<u8>> {
+    let img = image::open(input_path).unwrap().to_rgb();
     let (x, y) = img.dimensions();
-    let mut img_seg: RgbImage = img.clone();
-
-    let centr = CentroidSet::new(k_value);
-    let centrtmp = CentroidSet::new(k_value);
+    let mut img_seg = img.clone();
+    let mut centroids: Vec<Rgb<u8>> = Vec::with_capacity(k_value);
+    let mut centroids_cumulated: Vec<(Rgb<u32>, u32)>;
 
     // Init with random centroids
     for _i in 0..k_value {
-        centr.add(img.get_pixel(
+        centroids.push(img.get_pixel(
             rand::thread_rng().gen_range(0, x),
             rand::thread_rng().gen_range(0, y)
-        ));
+        ).clone());
     }
 
     // Clustering
-    let mut iterations = 0;
-    while iterations < 4 {
-        //Prepare for average calculation
-        centrtmp.reset();
+    let mut iteration_counter = 0;
+    loop {
+        centroids_cumulated = vec![(Rgb([0,0,0]), 0); k_value];
         for y_i in 0..y {
             for x_i in 0..x {
                 let pixel = img.get_pixel(x_i, y_i);
-                let centroid = centr.get_closest_centroid(pixel);
-
-                img_seg.put_pixel(x_i, y_i, Rgb(centroids[candidate_i]));
-                cumulate(&mut centroids_cumulated[candidate_i], &px);
+                let mut distance = std::f32::MAX;
+                let mut candidate_i = 0;
+                for (i, centroid) in centroids.iter().enumerate() {
+                    let tmp = euclidean_distance(&pixel, &centroid);
+                    if tmp < distance {
+                        candidate_i = i;
+                        distance = tmp;
+                    }
+                }
+                img_seg.put_pixel(x_i, y_i, centroids[candidate_i]);
+                cumulate(&mut centroids_cumulated[candidate_i], &pixel);
             }
-            if y_i % 20 == 0 {
-                img_seg.save(Path::new(&format!("./images/{}_{}.jpg", frmt(iterations), frmt(y_i)))).expect("idk");
+            if y_i % 20 == 0 && save_artefacts {
+                img_seg.save(
+                    Path::new(&format!("./images/{}_{}.jpg", frmt(iteration_counter), frmt(y_i))))
+                .expect("idk");
             }
         }
-        for i in 0..k_value {
-            avg(&mut centroids_cumulated[i], &mut centroids[i]);
+        avg(&mut centroids_cumulated);
+        if are_same(&mut centroids, &centroids_cumulated) {
+            return img_seg;
+        } else {
+            println!("iteration: {}, centroids: {:?}", iteration_counter, centroids);
+            iteration_counter += 1;
         }
-        println!("iteration: {}, centroids: {:?}", iterations, centroids);
-        iterations += 1;
     }
 }
 
-fn avg(vec1: &mut [usize; 4], vec2: &mut [u8; 3]) {
-    vec2[0] = (vec1[0] / vec1[3]) as u8;
-    vec2[1] = (vec1[1] / vec1[3]) as u8;
-    vec2[2] = (vec1[2] / vec1[3]) as u8;
+fn euclidean_distance(pixel1: &Rgb<u8>, pixel2: &Rgb<u8>) -> f32 {
+    ((pixel1.0[0] as f32 - pixel2.0[0] as f32).powf(2f32) +
+    (pixel1.0[1] as f32 - pixel2.0[1] as f32).powf(2f32) +
+    (pixel1.0[2] as f32 - pixel2.0[2] as f32).powf(2f32)).sqrt()
+}
+
+fn cumulate(centroid: &mut (Rgb<u32>, u32), pixel: &Rgb<u8>) {
+    centroid.0.0[0] += pixel[0] as u32;
+    centroid.0.0[1] += pixel[1] as u32;
+    centroid.0.0[2] += pixel[2] as u32;
+    centroid.1 += 1;
+}
+
+fn avg(centroids_cumulated: &mut Vec<(Rgb<u32>, u32)>) {
+    for centroid in centroids_cumulated {
+        for i in 0..3 {
+            centroid.0[i] = centroid.0[i]/centroid.1;
+        }
+    }
+}
+
+fn are_same(centroids: &mut Vec<Rgb<u8>>, centroids_cumulated: &Vec<(Rgb<u32>, u32)>) -> bool {
+    let mut same = true;
+    for i in 0..centroids.len() {
+        for j in 0..3 {
+            if centroids[i].0[j] != centroids_cumulated[i].0[j] as u8 {
+                same = false;
+            }
+            centroids[i].0[j] = centroids_cumulated[i].0[j] as u8
+        }
+    }
+    return same;
 }
 
 fn frmt(num: u32) -> String {
@@ -144,5 +99,17 @@ fn frmt(num: u32) -> String {
 }
 
 fn main() {
-    init(4, "./src/me.jpg");
+    let args: Vec<String> = env::args().collect();
+    let k: usize = args[1].parse().unwrap();
+    let input = &args[2];
+    let output = &args[3];
+    let artefacts: bool = args[4].parse().unwrap();
+
+    if k > 0 {
+        k_means(k, Path::new(&input), artefacts)
+            .save(Path::new(&output))
+            .expect("idk");
+    } else {
+        println!("k-value must be greater than 0");
+    }
 }
